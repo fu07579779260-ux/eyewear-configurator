@@ -4,7 +4,7 @@ import { FRAME_SHAPES } from '@/model/config'
 import { sanitizeConfig } from '@/model/sanitize'
 import { buildFrontFrame } from './front'
 import { HINGE, hingeLayout, TEMPLE_THICKNESS } from './hinge'
-import { standInLayout } from './standin'
+import { standInLayout } from './layout'
 import { buildTemple, EAR_BEND } from './temple'
 
 let wasm: ManifoldToplevel

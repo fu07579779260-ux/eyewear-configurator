@@ -55,7 +55,7 @@ export function NumberField({
             onKeyDown={(e) => {
               if (e.key === 'Enter') commit(e.currentTarget.value)
             }}
-            className="w-16 rounded-md bg-canvas px-2 py-1 text-right text-ink tabular-nums ring-1 ring-rule focus:ring-sage"
+            className="h-9 w-16 rounded-md bg-canvas px-2 text-right text-ink tabular-nums ring-1 ring-rule focus:ring-sage"
           />
           {unit}
         </span>
@@ -68,7 +68,7 @@ export function NumberField({
         step={range.step}
         value={value}
         onChange={(e) => onChange(clampToRange(Number(e.target.value), range))}
-        className="h-6 w-full cursor-pointer accent-sage"
+        className="h-8 w-full cursor-pointer accent-sage"
       />
       <div className="flex justify-between text-[0.7rem] text-muted tabular-nums" aria-hidden="true">
         <span>{range.min.toFixed(digits)}</span>

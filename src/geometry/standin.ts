@@ -1,17 +1,14 @@
 import { ExtrudeGeometry, Path, Shape, Vector2, type BufferGeometry } from 'three'
 import type { EyewearConfig } from '@/model/config'
-import { END_PIECE, lensWidthFor } from '@/model/sizes'
-import { lensOutline, lensSpec, offsetOutline, upperEdgeAt, type Outline } from './lens'
+import { FRONT_BEVEL, standInLayout } from './layout'
+import { offsetOutline, type Outline } from './lens'
 
 // A simple pair of glasses built from the fit dimensions and the lens
 // outlines (PLAN.md §9 steps 4–5). The rims and lenses already follow the
 // real lens shapes; build steps 6–7 replace the bridge, end pieces, temples
 // and hinges with printable parts.
 //
-// Scene units are millimetres. X runs across the face (+X is the wearer's
-// left, seen from the front on the right), Y is up with Y = 0 at the lens
-// centres, and +Z points forward out of the face. The front frame sits
-// between Z = -frontThickness and Z = 0; the temples run back along -Z.
+// Coordinates as in layout.ts.
 
 /** Temple thickness (across X). Placeholder until the temple step. */
 export const TEMPLE_THICKNESS = 3.2
@@ -19,49 +16,6 @@ export const TEMPLE_THICKNESS = 3.2
 const EAR_BEND = 32
 /** How far the temple tip drops below the hinge. */
 const EAR_DROP = 20
-/** Rounded edge on the front frame. */
-export const FRONT_BEVEL = 0.6
-
-export interface StandInLayout {
-  lensWidth: number
-  lensHeight: number
-  /** The right lens outline, centred on (0, 0) */
-  outline: Outline
-  /** X of the right lens centre (the left one is mirrored) */
-  lensCentreX: number
-  /** X of the outer edge of the right rim */
-  rimOuterX: number
-  /** X of the right hinge, the outer end of the front frame */
-  hingeX: number
-  /** Y of the end pieces and hinges, near the top outer corner of the rim */
-  hingeY: number
-  /** Y of the bridge, near the top inner corner of the rim */
-  bridgeY: number
-  /** Lowest point of the frame, where it rests on the table */
-  bottomY: number
-}
-
-export function standInLayout(config: EyewearConfig): StandInLayout {
-  const { frameWidth, bridge, rimWidth, lensHeight } = config.fit
-  const lensWidth = lensWidthFor(frameWidth, bridge, rimWidth)
-  const outline = lensOutline(lensSpec(config, lensWidth))
-  // The end piece meets the rim just inside its outer top corner, the bridge
-  // just inside its inner top corner; both sit a little below the rim's top edge
-  const hingeY = upperEdgeAt(outline, lensWidth / 2 - Math.min(6, lensWidth * 0.12)) - rimWidth * 0.1
-  const bridgeY = upperEdgeAt(outline, -lensWidth / 2 + Math.min(7, lensWidth * 0.14)) - rimWidth * 0.2
-  return {
-    lensWidth,
-    lensHeight,
-    outline,
-    lensCentreX: bridge / 2 + lensWidth / 2,
-    rimOuterX: bridge / 2 + lensWidth + rimWidth,
-    hingeX: bridge / 2 + lensWidth + rimWidth + END_PIECE,
-    hingeY: Math.min(hingeY, lensHeight / 2),
-    bridgeY: Math.min(bridgeY, lensHeight / 2),
-    bottomY: -(lensHeight / 2 + rimWidth),
-  }
-}
-
 const toVectors = (outline: Outline, dx: number) => outline.map(([x, y]) => new Vector2(x + dx, y))
 
 /** A flat band of constant width along a 2D centre line, as a closed shape. */

@@ -1,7 +1,7 @@
 import { lensCutOutline } from '@/geometry/front'
 import type { Outline } from '@/geometry/lens'
 import type { MeshData } from '@/geometry/manifold-mesh'
-import { standInLayout } from '@/geometry/standin'
+import { standInLayout } from '@/geometry/layout'
 import type { EyewearConfig } from '@/model/config'
 
 // The lens shapes for the optician (PLAN.md §3 outputs): the outline to cut

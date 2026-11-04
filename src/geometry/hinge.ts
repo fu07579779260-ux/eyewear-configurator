@@ -1,5 +1,5 @@
 import type { EyewearConfig } from '@/model/config'
-import { standInLayout } from './standin'
+import { standInLayout } from './layout'
 
 // The standard temple connection (PLAN.md §4.6, §5): every frame and every
 // temple gets the same hinge pockets, so any temple fits any frame.

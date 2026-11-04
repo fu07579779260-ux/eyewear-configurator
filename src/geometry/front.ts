@@ -3,7 +3,7 @@ import type { EyewearConfig } from '@/model/config'
 import { HINGE, hingeLayout } from './hinge'
 import { offsetOutline, type Outline } from './lens'
 import { band, roundedSlab, Scratch } from './solid'
-import { standInLayout, type StandInLayout } from './standin'
+import { standInLayout, type StandInLayout } from './layout'
 
 // The printed front frame (PLAN.md §9 steps 6–7): both rims, the bridge and
 // the two end pieces as ONE watertight solid, ready for SLS printing in PA12.

@@ -2,7 +2,8 @@ import { Box3, Mesh } from 'three'
 import { describe, expect, it } from 'vitest'
 import { DEFAULT_CONFIG } from '@/model/config'
 import { sanitizeConfig } from '@/model/sanitize'
-import { buildStandIn, disposeStandIn, standInLayout } from './standin'
+import { standInLayout } from './layout'
+import { buildStandIn, disposeStandIn } from './standin'
 
 describe('stand-in glasses', () => {
   it('puts the hinges at half the frame width', () => {

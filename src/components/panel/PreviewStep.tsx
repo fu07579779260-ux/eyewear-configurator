@@ -46,7 +46,7 @@ export function PreviewStep({ onEdit }: { onEdit: (step: StepId) => void }) {
             <button
               type="button"
               onClick={() => onEdit(row.step)}
-              className="flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold text-sage hover:bg-soft"
+              className="flex min-h-9 shrink-0 items-center gap-1 rounded-full px-3 text-xs font-semibold text-sage hover:bg-soft"
             >
               <Pencil className="size-3" aria-hidden="true" />
               {t('summary.edit')}

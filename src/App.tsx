@@ -23,6 +23,11 @@ export default function App() {
     window.scrollTo(0, 0)
   }, [route])
 
+  // The browser tab follows the language
+  useEffect(() => {
+    document.title = t('app.title')
+  }, [t])
+
   return (
     <div className="studio flex min-h-dvh flex-col">
       <a
