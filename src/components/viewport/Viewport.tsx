@@ -7,6 +7,7 @@ import { standInLayout } from '@/geometry/standin'
 import { useT } from '@/i18n/language'
 import { cn } from '@/lib/utils'
 import { useDesign } from '@/model/design-context'
+import { CaptureRegistrar } from './CaptureRegistrar'
 import { Glasses } from './Glasses'
 
 // Scene units are millimetres, Y up, Y = 0 at the lens centres, the front of
@@ -149,6 +150,7 @@ export default function Viewport() {
         />
 
         <CameraHome homeKey={homeKey} frameWidth={frameWidth} target={target} />
+        <CaptureRegistrar fitWidth={frameWidth} />
         {import.meta.env.DEV && <DebugHandle />}
         <OrbitControls
           key={homeKey}
