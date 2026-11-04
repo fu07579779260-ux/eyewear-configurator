@@ -2,6 +2,7 @@ import type { Manifold, ManifoldToplevel } from 'manifold-3d'
 import type { EyewearConfig } from '@/model/config'
 import { HINGE, hingeLayout, TEMPLE_THICKNESS } from './hinge'
 import { band, roundedSlab, Scratch } from './solid'
+import { textureDepth, textureSection, textureZone } from './texture'
 
 // The printed temple (PLAN.md §9 step 7), as a watertight solid in its own
 // print frame: lying flat, length along +X from its front end (X = 0) to the
@@ -85,7 +86,17 @@ export function buildTemple(wasm: ManifoldToplevel, config: EyewearConfig): Mani
         -0.01,
       ]),
     )
-    return body.subtract(s.keep(recess.add(pilot))) // not kept: returned to the caller
+    let cuts = s.keep(recess.add(pilot))
+
+    // Texture on the outer face, between the hinge zone and the ear bend (PLAN.md §4.4)
+    const texture = textureSection(wasm, config, profile, textureZone(config, HINGE_ZONE, EAR_BEND))
+    if (texture) {
+      s.keep(texture)
+      const depth = textureDepth(config)
+      const slab = s.keep(s.keep(texture.extrude(depth + 0.05)).translate([0, 0, TEMPLE_THICKNESS - depth]))
+      cuts = s.keep(cuts.add(slab))
+    }
+    return body.subtract(cuts) // not kept: returned to the caller
   } finally {
     s.free()
   }

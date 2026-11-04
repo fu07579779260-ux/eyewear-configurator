@@ -50,7 +50,7 @@ export function usePrintedParts(config: EyewearConfig): PrintedParts | null {
     }
     // Only the parts of the design that shape the printed parts matter here
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [config.shape, config.fit])
+  }, [config.shape, config.fit, config.texture])
 
   // Free the last meshes when the viewport closes
   useEffect(

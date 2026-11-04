@@ -5,6 +5,7 @@ import { ColoursStep } from '@/components/panel/ColoursStep'
 import { DimensionsStep } from '@/components/panel/DimensionsStep'
 import { PreviewStep } from '@/components/panel/PreviewStep'
 import { ShapeStep } from '@/components/panel/ShapeStep'
+import { TextureStep } from '@/components/panel/TextureStep'
 import { ViewportErrorBoundary } from '@/components/viewport/ViewportErrorBoundary'
 import { Button } from '@/components/ui/button'
 import { STEP_DESCRIPTION, STEP_LABEL, STEP_TITLE, STEPS } from '@/configure/steps'
@@ -124,7 +125,8 @@ export function ConfigurePage() {
             {step === 'dimensions' && <DimensionsStep />}
             {step === 'preview' && <PreviewStep onEdit={(id) => setActive(STEPS.indexOf(id))} />}
             {step === 'colours' && <ColoursStep />}
-            {(step === 'texture' || step === 'personal') && (
+            {step === 'texture' && <TextureStep />}
+            {step === 'personal' && (
               <div className="rounded-xl border border-dashed border-rule bg-canvas/60 p-4 text-sm text-muted">
                 {t('panel.placeholder')}
               </div>
