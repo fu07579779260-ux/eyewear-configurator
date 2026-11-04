@@ -8,10 +8,11 @@ import { designCode } from '@/model/serialize'
 import { derivedSizes } from '@/model/sizes'
 import { ExportPanel } from './ExportPanel'
 import { PrintCheck } from './PrintCheck'
+import { SavePanel } from './SavePanel'
 
 /**
  * Step 6: everything chosen so far on one card, each line with a link back to
- * its step, the print check and the production files. Saving follows in build step 14.
+ * its step, then saving and sharing, the print check and the production files.
  */
 export function PreviewStep({ onEdit }: { onEdit: (step: StepId) => void }) {
   const t = useT()
@@ -57,9 +58,9 @@ export function PreviewStep({ onEdit }: { onEdit: (step: StepId) => void }) {
           <dd className="text-sm font-semibold text-ink tabular-nums">{designCode(config)}</dd>
         </div>
       </dl>
+      <SavePanel />
       <PrintCheck config={config} />
       <ExportPanel />
-      <p className="rounded-xl bg-canvas p-3 text-xs leading-relaxed text-muted ring-1 ring-rule">{t('summary.later')}</p>
     </div>
   )
 }

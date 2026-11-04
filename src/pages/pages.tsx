@@ -7,6 +7,7 @@ import type { StringKey } from '@/i18n/strings'
 import { href } from '@/lib/router'
 
 export { ConfigurePage } from './ConfigurePage'
+export { MyDesignsPage } from './MyDesignsPage'
 
 // Five dye colours shown as frame / temple pairs on the home page
 const PAIRS = [
@@ -89,6 +90,3 @@ export const InspirationPage = () => (
   <ComingPage kicker="inspiration.kicker" title="inspiration.title" lead="inspiration.lead" />
 )
 export const GuidePage = () => <ComingPage kicker="guide.kicker" title="guide.title" lead="guide.lead" />
-export const MyDesignsPage = () => (
-  <ComingPage kicker="myDesigns.kicker" title="myDesigns.title" lead="myDesigns.lead" />
-)

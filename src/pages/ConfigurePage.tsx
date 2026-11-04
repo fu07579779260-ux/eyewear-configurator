@@ -32,7 +32,12 @@ export function ConfigurePage() {
   const sizes = derivedSizes(config)
   const parts = usePartsStatus()
   const warnings = printWarnings(config).length + parts.broken.length
-  const [active, setActive] = useState(0)
+  // Another page can open a step directly, e.g. #/configure?step=colours (new temples for a saved frame)
+  const [active, setActive] = useState(() => {
+    const asked = new URLSearchParams(window.location.hash.split('?')[1] ?? '').get('step')
+    const index = STEPS.indexOf(asked as (typeof STEPS)[number])
+    return index >= 0 ? index : 0
+  })
   const navRef = useRef<HTMLOListElement>(null)
   const step = STEPS[active]
 
