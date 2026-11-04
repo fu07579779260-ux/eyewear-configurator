@@ -2,6 +2,7 @@ import type { Manifold, ManifoldToplevel } from 'manifold-3d'
 import type { EyewearConfig } from '@/model/config'
 import { HINGE, hingeLayout, TEMPLE_THICKNESS } from './hinge'
 import { band, roundedSlab, Scratch } from './solid'
+import { markSection, placeMarks, type Marks, type Side } from './engrave'
 import { textureDepth, textureSection, textureZone } from './texture'
 
 // The printed temple (PLAN.md §9 step 7), as a watertight solid in its own
@@ -56,8 +57,14 @@ export function templeHalfHeights(config: EyewearConfig, centre: [number, number
 
 const smooth = (t: number) => t * t * (3 - 2 * t)
 
-/** Build the printable right temple. */
-export function buildTemple(wasm: ManifoldToplevel, config: EyewearConfig): Manifold {
+const NO_MARKS: Marks = { inscription: null, number: null }
+
+/**
+ * Build a printable temple. Both temples share one shape (the left one is
+ * shown and printed mirrored); they differ only in their engravings, which
+ * are laid out per side so that they read the right way round.
+ */
+export function buildTemple(wasm: ManifoldToplevel, config: EyewearConfig, side: Side = 'right', marks: Marks = NO_MARKS): Manifold {
   const s = new Scratch()
   try {
     const centre = templeCentreLine(config)
@@ -88,11 +95,21 @@ export function buildTemple(wasm: ManifoldToplevel, config: EyewearConfig): Mani
     )
     let cuts = s.keep(recess.add(pilot))
 
+    // Personal details engraved on the inner face, along the straight part (PLAN.md §4.5)
+    const zone = textureZone(config, HINGE_ZONE, EAR_BEND)
+    const placed = placeMarks(config, side, marks, zone)
+    for (const mark of placed) {
+      const section = s.keep(markSection(wasm, mark))
+      const cut = s.keep(s.keep(section.extrude(mark.depth + 0.01)).translate([0, 0, -0.01]))
+      cuts = s.keep(cuts.add(cut))
+    }
+    const engraved = Math.max(0, ...placed.map((m) => m.depth))
+
     // Texture on the outer face, between the hinge zone and the ear bend (PLAN.md §4.4)
-    const texture = textureSection(wasm, config, profile, textureZone(config, HINGE_ZONE, EAR_BEND))
+    const texture = textureSection(wasm, config, profile, zone)
     if (texture) {
       s.keep(texture)
-      const depth = textureDepth(config)
+      const depth = textureDepth(config, engraved)
       const slab = s.keep(s.keep(texture.extrude(depth + 0.05)).translate([0, 0, TEMPLE_THICKNESS - depth]))
       cuts = s.keep(cuts.add(slab))
     }

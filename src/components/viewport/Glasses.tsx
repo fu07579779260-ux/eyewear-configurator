@@ -5,6 +5,7 @@ import { HINGE, hingeLayout } from '@/geometry/hinge'
 import { buildStandIn, disposeStandIn, FRONT_BEVEL, type StandInParts } from '@/geometry/standin'
 import { DYE_HEX, templeColour, type EyewearConfig } from '@/model/config'
 import { LensMaterial, NylonMaterial, SteelMaterial } from './materials'
+import { useMarks } from '@/personal/use-marks'
 import { usePrintedParts, type PrintedParts } from './use-printed-parts'
 
 /**
@@ -60,10 +61,12 @@ function TempleOnPivot({
   config,
   printed,
   standIn,
+  side,
 }: {
   config: EyewearConfig
   printed: PrintedParts | null
   standIn: StandInParts
+  side: 'right' | 'left'
 }) {
   const h = hingeLayout(config)
   const [u0, u1] = h.templePocketU
@@ -76,7 +79,7 @@ function TempleOnPivot({
     <group>
       {/* The temple lies along -Z with its inner face towards the head: its print frame turned 90° */}
       {printed ? (
-        <mesh geometry={printed.temple} position={[dx, 0, dz]} rotation-y={Math.PI / 2} castShadow>
+        <mesh geometry={side === 'right' ? printed.temple : printed.templeLeft} position={[dx, 0, dz]} rotation-y={Math.PI / 2} castShadow>
           <NylonMaterial colour={DYE_HEX[templeColour(config)]} />
         </mesh>
       ) : (
@@ -109,7 +112,8 @@ function TempleOnPivot({
 export function Glasses({ config, folded }: { config: EyewearConfig; folded: boolean }) {
   const standIn = useMemo(() => buildStandIn(config), [config])
   useEffect(() => () => disposeStandIn(standIn), [standIn])
-  const printed = usePrintedParts(config)
+  const marks = useMarks(config)
+  const printed = usePrintedParts(config, marks)
 
   const h = hingeLayout(config)
   const t = config.fit.frontThickness
@@ -150,7 +154,7 @@ export function Glasses({ config, folded }: { config: EyewearConfig; folded: boo
       </mesh>
       <FrameHingeHalf config={config} />
       <group ref={which === 'right' ? right : left} position={[h.axisX, h.y, h.axisZ]}>
-        <TempleOnPivot config={config} printed={printed} standIn={standIn} />
+        <TempleOnPivot config={config} printed={printed} standIn={standIn} side={which} />
       </group>
     </group>
   )

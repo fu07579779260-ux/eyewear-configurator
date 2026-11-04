@@ -3,16 +3,24 @@ import type { BufferGeometry } from 'three'
 import { buildFrontFrame } from '@/geometry/front'
 import { loadManifold } from '@/geometry/manifold-loader'
 import { fromManifold, toGeometry } from '@/geometry/manifold-mesh'
+import type { Marks } from '@/geometry/engrave'
 import { buildTemple } from '@/geometry/temple'
 import type { EyewearConfig } from '@/model/config'
 
 /** Wait this long after the last change before rebuilding, so dragging a slider stays smooth. */
 const SETTLE_MS = 80
 
+function disposeParts(parts: PrintedParts) {
+  parts.front.dispose()
+  parts.temple.dispose()
+  parts.templeLeft.dispose()
+}
+
 export interface PrintedParts {
   front: BufferGeometry
-  /** The right temple in its print frame; the left one is shown mirrored */
+  /** The temples in their print frame; the left one is shown mirrored. They differ only in their engravings. */
   temple: BufferGeometry
+  templeLeft: BufferGeometry
 }
 
 /**
@@ -21,7 +29,7 @@ export interface PrintedParts {
  * stand-in parts. The last parts stay on screen while the next ones are
  * built, so the view doesn't flicker.
  */
-export function usePrintedParts(config: EyewearConfig): PrintedParts | null {
+export function usePrintedParts(config: EyewearConfig, marks: Marks): PrintedParts | null {
   const [built, setBuilt] = useState<PrintedParts | null>(null)
 
   useEffect(() => {
@@ -33,13 +41,17 @@ export function usePrintedParts(config: EyewearConfig): PrintedParts | null {
           const { solid } = buildFrontFrame(wasm, config)
           const front = toGeometry(fromManifold(solid))
           solid.delete()
-          const templeSolid = buildTemple(wasm, config)
-          const temple = toGeometry(fromManifold(templeSolid))
-          templeSolid.delete()
+          const templeOf = (side: 'right' | 'left') => {
+            const solid = buildTemple(wasm, config, side, marks)
+            const geometry = toGeometry(fromManifold(solid))
+            solid.delete()
+            return geometry
+          }
+          const temple = templeOf('right')
+          const templeLeft = templeOf('left')
           setBuilt((previous) => {
-            previous?.front.dispose()
-            previous?.temple.dispose()
-            return { front, temple }
+            if (previous) disposeParts(previous)
+            return { front, temple, templeLeft }
           })
         })
         .catch((error) => console.error('Could not build the printed parts', error))
@@ -50,14 +62,13 @@ export function usePrintedParts(config: EyewearConfig): PrintedParts | null {
     }
     // Only the parts of the design that shape the printed parts matter here
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [config.shape, config.fit, config.texture])
+  }, [config.shape, config.fit, config.texture, config.personal, marks])
 
   // Free the last meshes when the viewport closes
   useEffect(
     () => () =>
       setBuilt((previous) => {
-        previous?.front.dispose()
-        previous?.temple.dispose()
+        if (previous) disposeParts(previous)
         return null
       }),
     [],

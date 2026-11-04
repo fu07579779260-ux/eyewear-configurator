@@ -3,6 +3,7 @@ import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { FrameSketch } from '@/components/layout/FrameSketch'
 import { ColoursStep } from '@/components/panel/ColoursStep'
 import { DimensionsStep } from '@/components/panel/DimensionsStep'
+import { PersonalStep } from '@/components/panel/PersonalStep'
 import { PreviewStep } from '@/components/panel/PreviewStep'
 import { ShapeStep } from '@/components/panel/ShapeStep'
 import { TextureStep } from '@/components/panel/TextureStep'
@@ -126,11 +127,7 @@ export function ConfigurePage() {
             {step === 'preview' && <PreviewStep onEdit={(id) => setActive(STEPS.indexOf(id))} />}
             {step === 'colours' && <ColoursStep />}
             {step === 'texture' && <TextureStep />}
-            {step === 'personal' && (
-              <div className="rounded-xl border border-dashed border-rule bg-canvas/60 p-4 text-sm text-muted">
-                {t('panel.placeholder')}
-              </div>
-            )}
+            {step === 'personal' && <PersonalStep />}
           </div>
 
           <div className="mt-5 flex items-center justify-between gap-2 border-t border-rule p-4">

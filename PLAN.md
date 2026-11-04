@@ -197,7 +197,7 @@ buy differ.
 **Platform and data**
 - Fully static app: runs locally and on GitHub Pages, no backend.
 - Must work in mainland China: no Google Fonts and no external CDNs. All
-  fonts (including a Chinese font for engraving) are bundled and lazy-loaded.
+  UI fonts are bundled; engraved text uses the device's own fonts (traced on a canvas), so no Chinese font file is needed.
 - Saved designs stay in the browser (IndexedDB).
 - Designed for phones first, and also for desktop.
 
@@ -215,7 +215,7 @@ buy differ.
 **Proposed additions** (same as the perfume project; to confirm when the step
 comes up):
 - `manifold-3d` (WASM): booleans for hinge pockets, perforations and engraving
-- `opentype.js`: glyph outlines for Latin and Chinese engraving
+- ~~`opentype.js`~~ not used (step 11): text is drawn on a canvas with the device's own fonts and traced into outlines, as in the perfume project, so no Latin or Chinese font file is downloaded
 - `jspdf`: spec sheet PDF
 - `qrcode`: QR codes for share links
 - `jszip`: production-file bundle and 3MF packaging

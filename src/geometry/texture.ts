@@ -42,9 +42,13 @@ export function textureZone(config: EyewearConfig, hingeZone: number, earBend: n
   return { u0: hingeZone, u1: config.fit.templeLength - earBend }
 }
 
-/** How deep the cuts go into the outer face. */
-export function textureDepth(config: EyewearConfig): number {
-  return config.texture.type === 'ribbed' ? config.texture.ribDepth : TEMPLE_THICKNESS - INNER_SKIN
+/**
+ * How deep the cuts go into the outer face. Perforations stop INNER_SKIN short
+ * of the inner face, and further still where that face is engraved, so the
+ * wall between a pocket and an engraving never drops under the SLS minimum.
+ */
+export function textureDepth(config: EyewearConfig, engravedDepth = 0): number {
+  return config.texture.type === 'ribbed' ? config.texture.ribDepth : TEMPLE_THICKNESS - INNER_SKIN - engravedDepth
 }
 
 /** Seeded random numbers, so the same seed always gives the same pattern. */
