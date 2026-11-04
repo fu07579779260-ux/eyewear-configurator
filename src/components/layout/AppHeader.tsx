@@ -29,7 +29,7 @@ export function AppHeader({ route }: { route: Route }) {
       </div>
       <nav aria-label={t('nav.label')}>
         {/* Scrolls sideways on narrow screens instead of wrapping */}
-        <ul className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-3 pb-2.5">
+        <ul className="mx-auto flex max-w-6xl gap-1 scroll-row overflow-x-auto px-3 pb-2.5">
           {ROUTES.map((r) => (
             <li key={r} className="shrink-0">
               <a

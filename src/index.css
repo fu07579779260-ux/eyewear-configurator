@@ -124,6 +124,26 @@
     @apply tracking-[0.06em];
   }
 
+  /* Sideways-scrolling rows (nav, steps) on phones: swipe, no visible scrollbar */
+  .scroll-row {
+    scrollbar-width: none;
+  }
+  .scroll-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* A raised linen card with a hairline edge and a soft contact shadow */
+  .panel {
+    @apply rounded-2xl bg-surface ring-1 ring-rule;
+    box-shadow: 0 1px 0 color-mix(in oklab, var(--ink) 6%, transparent),
+      0 12px 32px -20px color-mix(in oklab, var(--ink) 30%, transparent);
+  }
+
+  /* Fine matte grain, like the surface of dyed SLS nylon. Drawn locally (no image request). */
+  .nylon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.23 0 0 0 0 0.2 0 0 0 0 0.18 0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
   /* Soft daylight from the upper left over a warm studio wall */
   .studio {
     background:
