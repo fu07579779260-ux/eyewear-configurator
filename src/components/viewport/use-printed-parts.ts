@@ -6,6 +6,7 @@ import { fromManifold, toGeometry } from '@/geometry/manifold-mesh'
 import type { Marks } from '@/geometry/engrave'
 import { buildTemple } from '@/geometry/temple'
 import type { EyewearConfig } from '@/model/config'
+import { isSound, setPartsStatus, type PartId } from './parts-status'
 
 /** Wait this long after the last change before rebuilding, so dragging a slider stays smooth. */
 const SETTLE_MS = 80
@@ -38,17 +39,21 @@ export function usePrintedParts(config: EyewearConfig, marks: Marks): PrintedPar
       loadManifold()
         .then((wasm) => {
           if (cancelled) return
+          const broken: PartId[] = []
           const { solid } = buildFrontFrame(wasm, config)
+          if (!isSound(solid)) broken.push('front')
           const front = toGeometry(fromManifold(solid))
           solid.delete()
           const templeOf = (side: 'right' | 'left') => {
             const solid = buildTemple(wasm, config, side, marks)
+            if (!isSound(solid)) broken.push(side === 'right' ? 'templeRight' : 'templeLeft')
             const geometry = toGeometry(fromManifold(solid))
             solid.delete()
             return geometry
           }
           const temple = templeOf('right')
           const templeLeft = templeOf('left')
+          setPartsStatus({ checked: true, broken })
           setBuilt((previous) => {
             if (previous) disposeParts(previous)
             return { front, temple, templeLeft }

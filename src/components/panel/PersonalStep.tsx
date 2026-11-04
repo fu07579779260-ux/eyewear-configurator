@@ -9,6 +9,7 @@ import { useDesign } from '@/model/design-context'
 import { cleanInscription } from '@/model/sanitize'
 import { designCode } from '@/model/serialize'
 import { useMarks } from '@/personal/use-marks'
+import { CheckNote } from './CheckNote'
 import { NumberField } from './NumberField'
 
 /** Step 5: initials or a short inscription inside the temples, and the design number (PLAN.md §4.5). */
@@ -80,6 +81,7 @@ export function PersonalStep() {
         range={RANGES.personal.textSize}
         onChange={(textSize) => patch('personal', { textSize })}
       />
+      <CheckNote config={config} id="textSize" />
       <NumberField
         label={t('field.engravingDepth')}
         hint={t('field.engravingDepth.hint')}

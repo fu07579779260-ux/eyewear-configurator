@@ -3,6 +3,7 @@ import { fill, useT } from '@/i18n/language'
 import { cn } from '@/lib/utils'
 import { RANGES, RIB_DIRECTIONS, TEXTURES, type Texture } from '@/model/config'
 import { useDesign } from '@/model/design-context'
+import { CheckNote } from './CheckNote'
 import { NumberField } from './NumberField'
 
 /** Small side views of a temple showing each texture. */
@@ -106,6 +107,7 @@ export function TextureStep() {
             range={RANGES.texture.ribDepth}
             onChange={(ribDepth) => patch('texture', { ribDepth })}
           />
+          <CheckNote config={config} id="ribs" />
         </div>
       )}
 
@@ -130,6 +132,7 @@ export function TextureStep() {
               {t('texture.newPattern')}
             </button>
           </div>
+          <CheckNote config={config} id="pockets" />
         </div>
       )}
 

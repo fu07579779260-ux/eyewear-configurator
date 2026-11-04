@@ -6,6 +6,7 @@ import { templeColour } from '@/model/config'
 import { useDesign } from '@/model/design-context'
 import { designCode } from '@/model/serialize'
 import { derivedSizes } from '@/model/sizes'
+import { PrintCheck } from './PrintCheck'
 
 /**
  * Step 6: everything chosen so far on one card, each line with a link back to
@@ -55,6 +56,7 @@ export function PreviewStep({ onEdit }: { onEdit: (step: StepId) => void }) {
           <dd className="text-sm font-semibold text-ink tabular-nums">{designCode(config)}</dd>
         </div>
       </dl>
+      <PrintCheck config={config} />
       <p className="rounded-xl bg-canvas p-3 text-xs leading-relaxed text-muted ring-1 ring-rule">{t('summary.later')}</p>
     </div>
   )

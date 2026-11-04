@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, Check } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, TriangleAlert } from 'lucide-react'
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { FrameSketch } from '@/components/layout/FrameSketch'
 import { ColoursStep } from '@/components/panel/ColoursStep'
@@ -7,7 +7,9 @@ import { PersonalStep } from '@/components/panel/PersonalStep'
 import { PreviewStep } from '@/components/panel/PreviewStep'
 import { ShapeStep } from '@/components/panel/ShapeStep'
 import { TextureStep } from '@/components/panel/TextureStep'
+import { usePartsStatus } from '@/components/viewport/parts-status'
 import { ViewportErrorBoundary } from '@/components/viewport/ViewportErrorBoundary'
+import { printWarnings } from '@/geometry/checks'
 import { Button } from '@/components/ui/button'
 import { STEP_DESCRIPTION, STEP_LABEL, STEP_TITLE, STEPS } from '@/configure/steps'
 import { fill, useT } from '@/i18n/language'
@@ -28,6 +30,8 @@ export function ConfigurePage() {
   const t = useT()
   const { config } = useDesign()
   const sizes = derivedSizes(config)
+  const parts = usePartsStatus()
+  const warnings = printWarnings(config).length + parts.broken.length
   const [active, setActive] = useState(0)
   const navRef = useRef<HTMLOListElement>(null)
   const step = STEPS[active]
@@ -112,6 +116,16 @@ export function ConfigurePage() {
               <dd className="font-semibold text-ink tabular-nums">{designCode(config)}</dd>
             </div>
           </dl>
+          {warnings > 0 && (
+            <button
+              type="button"
+              onClick={() => setActive(STEPS.indexOf('preview'))}
+              className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full bg-surface/95 px-3 py-1.5 text-xs font-semibold text-warn ring-1 ring-warn/40 hover:bg-surface"
+            >
+              <TriangleAlert className="size-3.5" aria-hidden="true" />
+              {fill(t('check.warnings'), { count: String(warnings) })}
+            </button>
+          )}
         </section>
 
         <aside aria-label={t('panel.label')} className="panel flex flex-col lg:w-[24rem] lg:shrink-0">
