@@ -1,0 +1,134 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+/* Bundled with the app (no font CDN), so it also loads in mainland China */
+@import "@fontsource-variable/nunito-sans";
+
+/*
+ * Warm, calm studio: oat and linen backgrounds, muted text, and the five dye
+ * colours (sage, burgundy, sand, navy, charcoal) as the only accents. Matte,
+ * soft and tactile like dyed PA12 nylon. Kept distinct from the keycap
+ * configurator (light technical drawing) and the perfume configurator (dark
+ * showroom, gold, serif): no black, no gold, no serif, no blueprint lines.
+ * Chinese text uses the system sans.
+ */
+:root {
+  --radius: 0.875rem;
+
+  --canvas: #efe8de; /* page background, oat */
+  --surface: #f8f4ee; /* cards, linen */
+  --ink: #3a342e; /* main text, warm umber */
+  --muted: #6e655b; /* secondary text */
+  --sage: #55654f; /* primary actions, deep sage */
+  --soft: #e3dacd; /* soft fills, warm stone */
+  --accent: #8c9a84; /* light sage */
+  --warn: #8a3b33; /* warnings, burgundy */
+  --rule: #d8cebf; /* hairlines */
+
+  /* Dye palette (placeholders until matched to dyed samples) */
+  --dye-sage: #8c9a84;
+  --dye-burgundy: #6b2e35;
+  --dye-sand: #c8b597;
+  --dye-navy: #2f3a52;
+  --dye-charcoal: #3a3a3c;
+
+  --background: var(--canvas);
+  --foreground: var(--ink);
+  --card: var(--surface);
+  --card-foreground: var(--ink);
+  --popover: var(--surface);
+  --popover-foreground: var(--ink);
+  --primary: var(--sage);
+  --primary-foreground: #fbf8f3;
+  --secondary: var(--soft);
+  --secondary-foreground: var(--ink);
+  --muted-foreground: var(--muted);
+  --accent-foreground: var(--ink);
+  --destructive: var(--warn);
+  --border: var(--rule);
+  --input: #cbbfae;
+  --ring: var(--sage);
+
+  color-scheme: light;
+}
+
+@theme inline {
+  --font-sans: "Nunito Sans Variable", ui-sans-serif, system-ui, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace;
+
+  --radius-sm: calc(var(--radius) - 0.375rem);
+  --radius-md: calc(var(--radius) - 0.25rem);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 0.5rem);
+
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-sage: var(--sage);
+  --color-soft: var(--soft);
+  --color-accent: var(--accent);
+  --color-warn: var(--warn);
+  --color-rule: var(--rule);
+
+  --color-dye-sage: var(--dye-sage);
+  --color-dye-burgundy: var(--dye-burgundy);
+  --color-dye-sand: var(--dye-sand);
+  --color-dye-navy: var(--dye-navy);
+  --color-dye-charcoal: var(--dye-charcoal);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+  }
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.01em;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--sage) 30%, transparent);
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* Small label above headings and sections */
+  .kicker {
+    @apply text-xs font-semibold tracking-[0.14em] text-sage uppercase;
+  }
+  :lang(zh-CN) .kicker {
+    @apply tracking-[0.06em];
+  }
+
+  /* Soft daylight from the upper left over a warm studio wall */
+  .studio {
+    background:
+      radial-gradient(50rem 30rem at 10% -10%, #f8f3ea, transparent 70%),
+      radial-gradient(40rem 30rem at 100% 100%, color-mix(in oklab, var(--dye-sand) 22%, transparent), transparent 70%),
+      var(--canvas);
+  }
+}
