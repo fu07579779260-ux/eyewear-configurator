@@ -10,13 +10,15 @@ describe('stand-in glasses', () => {
     expect(l.hingeX * 2).toBeCloseTo(DEFAULT_CONFIG.fit.frameWidth, 6)
   })
 
-  it('builds a rim as wide and tall as the lens plus the rim on each side', () => {
-    const parts = buildStandIn(DEFAULT_CONFIG)
+  it.each(['round', 'roundedSquare', 'catEye'] as const)('builds a %s rim as wide and tall as the lens plus the rim on each side', (frame) => {
+    const config = sanitizeConfig({ shape: { frame } })
+    const parts = buildStandIn(config)
     const box = new Box3().setFromObject(new Mesh(parts.rim))
-    const l = standInLayout(DEFAULT_CONFIG)
-    const bevel = 0.6
-    expect(box.max.x).toBeCloseTo(l.rimOuterX + bevel, 1)
-    expect(box.max.y - box.min.y).toBeCloseTo(l.lensHeight + 2 * DEFAULT_CONFIG.fit.rimWidth + 2 * bevel, 1)
+    const l = standInLayout(config)
+    // The bevel is part of the rim width, so the rim ends exactly at its outer edge
+    expect(box.max.x).toBeCloseTo(l.rimOuterX, 1)
+    expect(box.max.y - box.min.y).toBeCloseTo(l.lensHeight + 2 * config.fit.rimWidth, 1)
+    expect(box.min.y).toBeCloseTo(l.bottomY, 1)
     disposeStandIn(parts)
   })
 

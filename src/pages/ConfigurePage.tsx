@@ -1,6 +1,7 @@
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react'
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { FrameSketch } from '@/components/layout/FrameSketch'
+import { ShapeStep } from '@/components/panel/ShapeStep'
 import { ViewportErrorBoundary } from '@/components/viewport/ViewportErrorBoundary'
 import { Button } from '@/components/ui/button'
 import { STEP_DESCRIPTION, STEP_LABEL, STEP_TITLE, STEPS } from '@/configure/steps'
@@ -115,8 +116,14 @@ export function ConfigurePage() {
             <p className="text-sm leading-relaxed text-muted">{t(STEP_DESCRIPTION[step])}</p>
           </div>
 
-          <div className="mx-5 rounded-xl border border-dashed border-rule bg-canvas/60 p-4 text-sm text-muted">
-            {t('panel.placeholder')}
+          <div className="px-5">
+            {step === 'shape' ? (
+              <ShapeStep />
+            ) : (
+              <div className="rounded-xl border border-dashed border-rule bg-canvas/60 p-4 text-sm text-muted">
+                {t('panel.placeholder')}
+              </div>
+            )}
           </div>
 
           <div className="mt-5 flex items-center justify-between gap-2 border-t border-rule p-4">

@@ -1,11 +1,12 @@
-import { ExtrudeGeometry, Shape, type BufferGeometry } from 'three'
+import { ExtrudeGeometry, Path, Shape, Vector2, type BufferGeometry } from 'three'
 import type { EyewearConfig } from '@/model/config'
 import { END_PIECE, lensWidthFor } from '@/model/sizes'
+import { lensOutline, lensSpec, offsetOutline, upperEdgeAt, type Outline } from './lens'
 
-// A simple stand-in pair of glasses, built from the fit dimensions so the
-// viewport, lighting and materials can be checked (PLAN.md §9 step 4).
-// Build steps 5–7 replace it with the real lens outlines, front frame,
-// temples and hinges.
+// A simple pair of glasses built from the fit dimensions and the lens
+// outlines (PLAN.md §9 steps 4–5). The rims and lenses already follow the
+// real lens shapes; build steps 6–7 replace the bridge, end pieces, temples
+// and hinges with printable parts.
 //
 // Scene units are millimetres. X runs across the face (+X is the wearer's
 // left, seen from the front on the right), Y is up with Y = 0 at the lens
@@ -18,18 +19,24 @@ export const TEMPLE_THICKNESS = 3.2
 const EAR_BEND = 32
 /** How far the temple tip drops below the hinge. */
 const EAR_DROP = 20
+/** Rounded edge on the front frame. */
+export const FRONT_BEVEL = 0.6
 
 export interface StandInLayout {
   lensWidth: number
   lensHeight: number
+  /** The right lens outline, centred on (0, 0) */
+  outline: Outline
   /** X of the right lens centre (the left one is mirrored) */
   lensCentreX: number
   /** X of the outer edge of the right rim */
   rimOuterX: number
   /** X of the right hinge, the outer end of the front frame */
   hingeX: number
-  /** Y of the bridge and the hinges */
+  /** Y of the end pieces and hinges, near the top outer corner of the rim */
   hingeY: number
+  /** Y of the bridge, near the top inner corner of the rim */
+  bridgeY: number
   /** Lowest point of the frame, where it rests on the table */
   bottomY: number
 }
@@ -37,51 +44,25 @@ export interface StandInLayout {
 export function standInLayout(config: EyewearConfig): StandInLayout {
   const { frameWidth, bridge, rimWidth, lensHeight } = config.fit
   const lensWidth = lensWidthFor(frameWidth, bridge, rimWidth)
+  const outline = lensOutline(lensSpec(config, lensWidth))
+  // The end piece meets the rim just inside its outer top corner, the bridge
+  // just inside its inner top corner; both sit a little below the rim's top edge
+  const hingeY = upperEdgeAt(outline, lensWidth / 2 - Math.min(6, lensWidth * 0.12)) - rimWidth * 0.1
+  const bridgeY = upperEdgeAt(outline, -lensWidth / 2 + Math.min(7, lensWidth * 0.14)) - rimWidth * 0.2
   return {
     lensWidth,
     lensHeight,
+    outline,
     lensCentreX: bridge / 2 + lensWidth / 2,
     rimOuterX: bridge / 2 + lensWidth + rimWidth,
     hingeX: bridge / 2 + lensWidth + rimWidth + END_PIECE,
-    hingeY: lensHeight * 0.22,
+    hingeY: Math.min(hingeY, lensHeight / 2),
+    bridgeY: Math.min(bridgeY, lensHeight / 2),
     bottomY: -(lensHeight / 2 + rimWidth),
   }
 }
 
-/** Corner radius of the lens outline for each shape. */
-function cornerRadius(config: EyewearConfig, w: number, h: number): number {
-  const max = Math.min(w, h) / 2
-  if (config.shape.frame === 'round') return max
-  if (config.shape.frame === 'catEye') return Math.min(max, 12)
-  return Math.min(max, config.shape.cornerRadius)
-}
-
-function roundedRect(shape: Shape, cx: number, cy: number, w: number, h: number, r: number, hole = false) {
-  const x0 = cx - w / 2
-  const y0 = cy - h / 2
-  const x1 = cx + w / 2
-  const y1 = cy + h / 2
-  // Counter-clockwise for the outline, clockwise for holes
-  const pts: [number, number, number, number, number][] = hole
-    ? [
-        [x0 + r, y0 + r, Math.PI, Math.PI * 1.5, 0],
-        [x0 + r, y1 - r, Math.PI * 0.5, Math.PI, 0],
-        [x1 - r, y1 - r, 0, Math.PI * 0.5, 0],
-        [x1 - r, y0 + r, Math.PI * 1.5, Math.PI * 2, 0],
-      ]
-    : [
-        [x1 - r, y0 + r, Math.PI * 1.5, Math.PI * 2, 0],
-        [x1 - r, y1 - r, 0, Math.PI * 0.5, 0],
-        [x0 + r, y1 - r, Math.PI * 0.5, Math.PI, 0],
-        [x0 + r, y0 + r, Math.PI, Math.PI * 1.5, 0],
-      ]
-  for (const [ax, ay, start, end] of pts) {
-    if (hole) shape.absarc(ax, ay, r, end, start, true)
-    else shape.absarc(ax, ay, r, start, end, false)
-  }
-  shape.closePath()
-  return shape
-}
+const toVectors = (outline: Outline, dx: number) => outline.map(([x, y]) => new Vector2(x + dx, y))
 
 /** A flat band of constant width along a 2D centre line, as a closed shape. */
 export function bandShape(points: [number, number][], halfWidth: number): Shape {
@@ -125,31 +106,32 @@ export interface StandInParts {
 export function buildStandIn(config: EyewearConfig): StandInParts {
   const { rimWidth, frontThickness, templeLength, templeWidth, bridge } = config.fit
   const l = standInLayout(config)
-  const r = cornerRadius(config, l.lensWidth, l.lensHeight)
-  const bevel = 0.6
+  const bevel = FRONT_BEVEL
   const bodyDepth = frontThickness - 2 * bevel
 
-  const rimShape = roundedRect(new Shape(), l.lensCentreX, 0, l.lensWidth + 2 * rimWidth, l.lensHeight + 2 * rimWidth, r + rimWidth)
-  rimShape.holes.push(roundedRect(new Shape(), l.lensCentreX, 0, l.lensWidth, l.lensHeight, r, true))
+  // Rim: the lens outline grown by the rim width (less the bevel, which adds it back), with the lens as a hole
+  const rimShape = new Shape(toVectors(offsetOutline(l.outline, rimWidth - bevel), l.lensCentreX))
+  rimShape.holes.push(new Path(toVectors(offsetOutline(l.outline, bevel), l.lensCentreX)))
   const rim = extrude(rimShape, bodyDepth, bevel)
 
-  const lens = extrude(roundedRect(new Shape(), l.lensCentreX, 0, l.lensWidth + 1, l.lensHeight + 1, r + 0.5), 1.6, 0)
+  // The lens reaches a little into the rim, as it would sit in the lens groove
+  const lens = extrude(new Shape(toVectors(offsetOutline(l.outline, 0.6), l.lensCentreX)), 1.6, 0)
 
   // A shallow arch between the two rims, overlapping them a little
-  const reach = bridge / 2 + rimWidth * 0.6
+  const reach = bridge / 2 + rimWidth * 0.8
   const arch: [number, number][] = Array.from({ length: 17 }, (_, i) => {
     const t = i / 16
-    return [-reach + 2 * reach * t, l.hingeY + 3.5 * Math.sin(Math.PI * t)]
+    return [-reach + 2 * reach * t, l.bridgeY + 3 * Math.sin(Math.PI * t)]
   })
-  const bridgeGeom = extrude(bandShape(arch, rimWidth * 0.5), bodyDepth, bevel)
+  const bridgeGeom = extrude(bandShape(arch, rimWidth * 0.45), bodyDepth, bevel)
 
   const endPiece = extrude(
     bandShape(
       [
-        [l.rimOuterX - rimWidth, l.hingeY],
+        [l.rimOuterX - rimWidth * 1.2, l.hingeY],
         [l.hingeX, l.hingeY],
       ],
-      rimWidth * 0.62,
+      rimWidth * 0.6,
     ),
     bodyDepth,
     bevel,
