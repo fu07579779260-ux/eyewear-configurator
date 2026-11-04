@@ -53,6 +53,8 @@ const en = {
   'panel.placeholder': 'The options for this step are added in a later build step.',
   'viewport.label': 'Preview',
   'viewport.placeholder': 'The live 3D model appears here.',
+  'viewport.size': 'Size',
+  'viewport.designNumber': 'Design no.',
 
   'inspiration.kicker': 'References',
   'inspiration.title': 'Inspiration',
@@ -124,6 +126,8 @@ const zh: Record<keyof typeof en, string> = {
   'panel.placeholder': '这一步的选项会在后面的构建步骤中加入。',
   'viewport.label': '预览',
   'viewport.placeholder': '实时 3D 模型会显示在这里。',
+  'viewport.size': '尺寸',
+  'viewport.designNumber': '设计编号',
 
   'inspiration.kicker': '参考案例',
   'inspiration.title': '灵感',

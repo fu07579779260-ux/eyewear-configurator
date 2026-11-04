@@ -5,6 +5,10 @@ import { Button } from '@/components/ui/button'
 import { STEP_DESCRIPTION, STEP_LABEL, STEP_TITLE, STEPS } from '@/configure/steps'
 import { fill, useT } from '@/i18n/language'
 import { cn } from '@/lib/utils'
+import { DYE_HEX, templeColour } from '@/model/config'
+import { useDesign } from '@/model/design-context'
+import { designCode } from '@/model/serialize'
+import { derivedSizes } from '@/model/sizes'
 
 /**
  * Configurator layout: the six-step rail on top, the preview as the main
@@ -13,6 +17,8 @@ import { cn } from '@/lib/utils'
  */
 export function ConfigurePage() {
   const t = useT()
+  const { config } = useDesign()
+  const sizes = derivedSizes(config)
   const [active, setActive] = useState(0)
   const navRef = useRef<HTMLOListElement>(null)
   const step = STEPS[active]
@@ -74,7 +80,22 @@ export function ConfigurePage() {
             aria-hidden="true"
             className="absolute inset-x-[15%] bottom-[22%] h-6 rounded-[50%] bg-ink/10 blur-xl"
           />
-          <FrameSketch className="relative w-[72%] max-w-md" />
+          <FrameSketch
+            frame={DYE_HEX[config.colour.frame]}
+            temple={DYE_HEX[templeColour(config)]}
+            className="relative w-[72%] max-w-md"
+          />
+          {/* Size read-out in the standard lens□bridge-temple form */}
+          <dl className="absolute top-3 left-3 flex flex-wrap gap-1.5 text-xs">
+            <div className="flex gap-1.5 rounded-full bg-surface/90 px-3 py-1.5 ring-1 ring-rule">
+              <dt className="text-muted">{t('viewport.size')}</dt>
+              <dd className="font-semibold text-ink tabular-nums">{sizes.sizeCode}</dd>
+            </div>
+            <div className="flex gap-1.5 rounded-full bg-surface/90 px-3 py-1.5 ring-1 ring-rule">
+              <dt className="text-muted">{t('viewport.designNumber')}</dt>
+              <dd className="font-semibold text-ink tabular-nums">{designCode(config)}</dd>
+            </div>
+          </dl>
           <p className="absolute bottom-3 left-4 text-xs text-muted">{t('viewport.placeholder')}</p>
         </section>
 
