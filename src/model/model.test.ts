@@ -93,6 +93,18 @@ describe('designReducer', () => {
     expect(derivedSizes(next).sizeCode).toBe('52□18-145')
   })
 
+  it('moves sizes from very large or small glasses to the nearest printable size', () => {
+    const next = designReducer(fresh(), {
+      type: 'fromGlasses',
+      measurement: { lensWidth: 62, bridge: 12, templeLength: 162 },
+    })
+    // Bridge and temple are clamped to their ranges; the frame width keeps as much lens as fits
+    expect(next.fit.bridge).toBe(RANGES.fit.bridge.min)
+    expect(next.fit.templeLength).toBe(RANGES.fit.templeLength.max)
+    expect(next.fit.frameWidth).toBe(RANGES.fit.frameWidth.max)
+    expect(derivedSizes(next).sizeCode).not.toBe('62□12-162')
+  })
+
   it('sets a new perforation seed and resets', () => {
     const next = designReducer(fresh(), { type: 'newPattern', seed: 42 })
     expect(next.texture.seed).toBe(42)
