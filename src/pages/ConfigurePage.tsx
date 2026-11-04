@@ -1,6 +1,7 @@
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { FrameSketch } from '@/components/layout/FrameSketch'
+import { ViewportErrorBoundary } from '@/components/viewport/ViewportErrorBoundary'
 import { Button } from '@/components/ui/button'
 import { STEP_DESCRIPTION, STEP_LABEL, STEP_TITLE, STEPS } from '@/configure/steps'
 import { fill, useT } from '@/i18n/language'
@@ -10,10 +11,12 @@ import { useDesign } from '@/model/design-context'
 import { designCode } from '@/model/serialize'
 import { derivedSizes } from '@/model/sizes'
 
+const Viewport = lazy(() => import('@/components/viewport/Viewport'))
+
 /**
  * Configurator layout: the six-step rail on top, the preview as the main
  * area and the step panel beside it (desktop) or below it (phone).
- * The step contents and the 3D viewport are filled in by later build steps.
+ * The step contents are filled in by later build steps.
  */
 export function ConfigurePage() {
   const t = useT()
@@ -73,20 +76,27 @@ export function ConfigurePage() {
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
         <section
           aria-label={t('viewport.label')}
-          className="panel nylon relative flex h-[42dvh] min-h-64 items-center justify-center overflow-hidden lg:sticky lg:top-32 lg:h-[calc(100dvh-10.5rem)] lg:min-h-[30rem] lg:flex-1"
+          className="panel relative h-[42dvh] min-h-64 overflow-hidden lg:sticky lg:top-32 lg:h-[calc(100dvh-10.5rem)] lg:min-h-[30rem] lg:flex-1"
         >
-          {/* Warm studio backdrop with a soft floor shadow under the glasses */}
-          <div
-            aria-hidden="true"
-            className="absolute inset-x-[15%] bottom-[22%] h-6 rounded-[50%] bg-ink/10 blur-xl"
-          />
-          <FrameSketch
-            frame={DYE_HEX[config.colour.frame]}
-            temple={DYE_HEX[templeColour(config)]}
-            className="relative w-[72%] max-w-md"
-          />
+          {/* The 3D code is large, so it loads on its own after the page shows */}
+          <ViewportErrorBoundary message={t('viewport.failed')}>
+            <Suspense
+              fallback={
+                <div className="nylon flex h-full flex-col items-center justify-center gap-4 bg-[#ece3d6]">
+                  <FrameSketch
+                    frame={DYE_HEX[config.colour.frame]}
+                    temple={DYE_HEX[templeColour(config)]}
+                    className="w-[60%] max-w-sm opacity-70"
+                  />
+                  <p className="text-sm text-muted">{t('viewport.loading')}</p>
+                </div>
+              }
+            >
+              <Viewport />
+            </Suspense>
+          </ViewportErrorBoundary>
           {/* Size read-out in the standard lens□bridge-temple form */}
-          <dl className="absolute top-3 left-3 flex flex-wrap gap-1.5 text-xs">
+          <dl role="status" className="pointer-events-none absolute top-3 left-3 flex flex-wrap gap-1.5 text-xs">
             <div className="flex gap-1.5 rounded-full bg-surface/90 px-3 py-1.5 ring-1 ring-rule">
               <dt className="text-muted">{t('viewport.size')}</dt>
               <dd className="font-semibold text-ink tabular-nums">{sizes.sizeCode}</dd>
@@ -96,7 +106,6 @@ export function ConfigurePage() {
               <dd className="font-semibold text-ink tabular-nums">{designCode(config)}</dd>
             </div>
           </dl>
-          <p className="absolute bottom-3 left-4 text-xs text-muted">{t('viewport.placeholder')}</p>
         </section>
 
         <aside aria-label={t('panel.label')} className="panel flex flex-col lg:w-[24rem] lg:shrink-0">
