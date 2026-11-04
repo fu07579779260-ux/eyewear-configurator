@@ -1,6 +1,7 @@
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react'
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { FrameSketch } from '@/components/layout/FrameSketch'
+import { ColoursStep } from '@/components/panel/ColoursStep'
 import { DimensionsStep } from '@/components/panel/DimensionsStep'
 import { PreviewStep } from '@/components/panel/PreviewStep'
 import { ShapeStep } from '@/components/panel/ShapeStep'
@@ -122,7 +123,8 @@ export function ConfigurePage() {
             {step === 'shape' && <ShapeStep />}
             {step === 'dimensions' && <DimensionsStep />}
             {step === 'preview' && <PreviewStep onEdit={(id) => setActive(STEPS.indexOf(id))} />}
-            {(step === 'colours' || step === 'texture' || step === 'personal') && (
+            {step === 'colours' && <ColoursStep />}
+            {(step === 'texture' || step === 'personal') && (
               <div className="rounded-xl border border-dashed border-rule bg-canvas/60 p-4 text-sm text-muted">
                 {t('panel.placeholder')}
               </div>
