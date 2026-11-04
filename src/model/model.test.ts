@@ -89,7 +89,7 @@ describe('designReducer', () => {
       type: 'fromGlasses',
       measurement: { lensWidth: 52, bridge: 18, templeLength: 145 },
     })
-    expect(next.fit.frameWidth).toBe(139)
+    expect(next.fit.frameWidth).toBe(145)
     expect(derivedSizes(next).sizeCode).toBe('52□18-145')
   })
 

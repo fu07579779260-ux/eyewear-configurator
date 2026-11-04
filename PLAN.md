@@ -105,7 +105,7 @@ size and temple length.
 
 | Name | Unit | Range / options | Default |
 |---|---|---|---|
-| Frame width (total front width) | mm | 124 – 150 | 136 |
+| Frame width (total front width) | mm | 128 – 156 | 142 (changed in step 7 when the end pieces grew to 7 mm for the hinge pocket) |
 | Bridge size | mm | 14 – 24 | 18 |
 | Temple length | mm | 130 – 155, step 5 | 145 |
 | Lens height (advanced) | mm | 30 – 50 | 40 (per shape) |
@@ -164,8 +164,9 @@ buy differ.
 
 | Part | Assumption |
 |---|---|
-| Hinge | Standard screw-in metal hinge for acetate/nylon frames, 5-barrel or 2/3-barrel, set into a pocket in the frame end piece and in the temple |
-| Screws | M1.4 eyewear screws |
+| Hinge | Standard 3-barrel screw hinge for plastic frames: two leaves 4.5 × 2.8 × 1.0 mm, barrels Ø 2.2 mm. One leaf sits in a pocket in the back of the end piece, the other in a pocket on the inside of the temple (0.15 mm clearance). The pivot sits in the inside corner, so a folded temple lies flat behind the frame |
+| End piece | 7 mm from the rim to the outer end of the frame, room for the frame leaf |
+| Screws | M1.4 pivot screw through the barrels; one M1.4 self-tapping screw per leaf, in a Ø 1.15 mm pilot hole |
 | Lenses | Standard optical or demo lenses, cut by an optician to the exported outline, held in a groove in the rim |
 | Lens groove | 1.2 mm wide, 0.7 mm deep |
 

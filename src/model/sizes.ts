@@ -4,8 +4,8 @@ import type { EyewearConfig } from './config'
 // temple (lens width □ bridge - temple length). The configurator lets users set
 // the total frame width instead, so the two are converted here.
 
-/** How far each end piece (with its hinge pocket) reaches beyond the rim. Placeholder, PLAN.md §4.6. */
-export const END_PIECE = 4
+/** How far each end piece (with its hinge pocket) reaches beyond the rim: room for the frame hinge leaf. Placeholder, PLAN.md §4.6. */
+export const END_PIECE = 7
 
 /** Lens widths outside this range get a warning (PLAN.md §4.2). */
 export const LENS_WIDTH_RANGE = { min: 44, max: 58 } as const

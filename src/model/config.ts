@@ -78,7 +78,7 @@ export const RANGES = {
     wingLift: { min: 2, max: 10, step: 0.5 },
   },
   fit: {
-    frameWidth: { min: 124, max: 150, step: 0.5 },
+    frameWidth: { min: 128, max: 156, step: 0.5 },
     bridge: { min: 14, max: 24, step: 0.5 },
     templeLength: { min: 130, max: 155, step: 5 },
     lensHeight: { min: 30, max: 50, step: 0.5 },
@@ -111,7 +111,7 @@ export const SHAPE_LENS_HEIGHT: Record<FrameShape, number> = {
 export const DEFAULT_CONFIG: EyewearConfig = {
   shape: { frame: 'roundedSquare', cornerRadius: 8, wingLift: 5 },
   fit: {
-    frameWidth: 136,
+    frameWidth: 142,
     bridge: 18,
     templeLength: 145,
     lensHeight: SHAPE_LENS_HEIGHT.roundedSquare,

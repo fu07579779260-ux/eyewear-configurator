@@ -24,8 +24,8 @@ describe('front frame', () => {
 
   it('spans the frame width, the rim height and the frame thickness', () => {
     for (const fit of [
-      { frameWidth: 124, bridge: 14, lensHeight: 30, frontThickness: 4 },
-      { frameWidth: 136, bridge: 18, lensHeight: 40, frontThickness: 5 },
+      { frameWidth: 128, bridge: 14, lensHeight: 30, frontThickness: 4 },
+      { frameWidth: 142, bridge: 18, lensHeight: 40, frontThickness: 5 },
       { frameWidth: 150, bridge: 24, lensHeight: 50, frontThickness: 7 },
     ]) {
       const config = sanitizeConfig({ fit })

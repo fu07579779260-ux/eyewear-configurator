@@ -1,12 +1,13 @@
 import { ContactShadows, Environment, Lightformer, OrbitControls } from '@react-three/drei'
 import { Canvas, useThree } from '@react-three/fiber'
-import { RotateCcw } from 'lucide-react'
+import { FoldHorizontal, RotateCcw, UnfoldHorizontal } from 'lucide-react'
 import { useCallback, useLayoutEffect, useState } from 'react'
 import type { Group, Mesh } from 'three'
 import { standInLayout } from '@/geometry/standin'
 import { useT } from '@/i18n/language'
+import { cn } from '@/lib/utils'
 import { useDesign } from '@/model/design-context'
-import { StandInGlasses } from './StandInGlasses'
+import { Glasses } from './Glasses'
 
 // Scene units are millimetres, Y up, Y = 0 at the lens centres, the front of
 // the frame facing +Z. Lit like a calm photo studio: a warm paper backdrop,
@@ -101,6 +102,7 @@ export default function Viewport() {
   const t = useT()
   const { config } = useDesign()
   const [resets, setResets] = useState(0)
+  const [folded, setFolded] = useState(false)
   const shadowRef = useUnmirroredShadow()
 
   const l = standInLayout(config)
@@ -131,8 +133,9 @@ export default function Viewport() {
         <directionalLight position={[frameWidth, frameWidth * 0.3, frameWidth * 0.6]} intensity={0.45} color={WARM_FILL} />
         <StudioLight />
 
-        <StandInGlasses config={config} />
+        <Glasses config={config} folded={folded} />
 
+        {/* Redrawn with every frame, so the shadow follows the temples as they fold and the printed parts as they arrive */}
         <ContactShadows
           ref={shadowRef}
           position={[0, l.bottomY - 0.3, target[2]]}
@@ -142,7 +145,6 @@ export default function Viewport() {
           opacity={0.6}
           color="#5b4a39"
           resolution={512}
-          frames={1}
           key={`shadow:${homeKey}:${l.bottomY.toFixed(1)}`}
         />
 
@@ -163,14 +165,34 @@ export default function Viewport() {
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-3">
         <p className="text-xs text-muted">{t('viewport.hint')}</p>
-        <button
-          type="button"
-          onClick={() => setResets((n) => n + 1)}
-          className="pointer-events-auto flex shrink-0 items-center gap-1.5 rounded-full bg-surface/90 px-3 py-1.5 text-xs font-semibold text-ink ring-1 ring-rule hover:bg-surface"
-        >
-          <RotateCcw className="size-3.5" aria-hidden="true" />
-          {t('viewport.reset')}
-        </button>
+        <div className="flex shrink-0 gap-1.5">
+          <button
+            type="button"
+            aria-pressed={folded}
+            onClick={() => setFolded((f) => !f)}
+            className={cn(
+              'pointer-events-auto flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold ring-1 transition-colors',
+              folded
+                ? 'bg-sage text-primary-foreground ring-sage'
+                : 'bg-surface/90 text-ink ring-rule hover:bg-surface',
+            )}
+          >
+            {folded ? (
+              <UnfoldHorizontal className="size-3.5" aria-hidden="true" />
+            ) : (
+              <FoldHorizontal className="size-3.5" aria-hidden="true" />
+            )}
+            {t('viewport.fold')}
+          </button>
+          <button
+            type="button"
+            onClick={() => setResets((n) => n + 1)}
+            className="pointer-events-auto flex items-center gap-1.5 rounded-full bg-surface/90 px-3 py-1.5 text-xs font-semibold text-ink ring-1 ring-rule hover:bg-surface"
+          >
+            <RotateCcw className="size-3.5" aria-hidden="true" />
+            {t('viewport.reset')}
+          </button>
+        </div>
       </div>
     </div>
   )
